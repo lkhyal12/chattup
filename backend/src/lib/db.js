@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 export async function connectToMongo() {
   try {
+    if (!process.env.MONGO_URI) throw new Error("MONGO_URI is not defined");
     const uri = process.env.MONGO_URI;
     if (!uri) {
       console.error(
