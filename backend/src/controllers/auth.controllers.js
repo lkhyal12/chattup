@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import { generateToken } from "../lib/utils.js";
 import { sendWelcomeEmail } from "../email/emailHandler.js";
 import "dotenv/config";
+import cloudinary from "../lib/cloudinary.js";
 export const signUp = async (req, res) => {
   const { fullName, email, password } = req.body;
   try {
@@ -84,4 +85,14 @@ export const login = async (req, res) => {
 export const logout = (_, res) => {
   res.cookie("jwt", "", { maxAge: 0 });
   res.status(200).json({ message: "User logged out successfully" });
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { profilePic } = req.body;
+    if (!profilePic)
+      return res.status(400).json({ message: "Profile picture is required" });
+    const userId = req.user._id;
+    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+  } catch (error) {}
 };
