@@ -5,6 +5,7 @@ import authRouter from "./routes/auth.routes.js";
 import messagesRouter from "./routes/message.route.js";
 import { connectToMongo } from "./lib/db.js";
 import cookieParser from "cookie-parser";
+import { arcjetProtection } from "./middleware/arcjet.middleware.js";
 
 const app = express();
 dotenv.config();
@@ -16,10 +17,13 @@ app.use("/api/auth", authRouter);
 const __dirname = path.resolve();
 // messages router
 app.use("/api/messages", messagesRouter);
+app.get("/protected", arcjetProtection, (req, res) => {
+  res.send({ message: "welcome home" });
+});
+// if (process.env.NODE_ENV === "production") {
 app.use("/", (req, res) => {
   res.send("hello welcome");
 });
-// if (process.env.NODE_ENV === "production") {
 //   app.use(express.static(path.join(__dirname, "..", "frontend", "dist")));
 //   app.get("*", (req, res) => {
 //     res.sendFile(path.join(__dirname, "..", "frontend", "dist", "index.html"));
