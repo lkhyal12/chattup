@@ -15,6 +15,7 @@ export async function protectRoute(req, res, next) {
     const user = await User.findById(decoded.userId).select("-password");
     if (!user) return res.status(404).json({ message: "User Not Found" });
     req.user = user;
+
     next();
   } catch (error) {
     console.log("error in protect route middleware ", error);

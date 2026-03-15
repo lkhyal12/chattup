@@ -6,20 +6,26 @@ import messagesRouter from "./routes/message.route.js";
 import { connectToMongo } from "./lib/db.js";
 import cookieParser from "cookie-parser";
 import { arcjetProtection } from "./middleware/arcjet.middleware.js";
-
+import cors from "cors";
+import { ENV } from "./lib/env.js";
 const app = express();
 dotenv.config();
 app.use(express.json());
 app.use(cookieParser());
-
+app.use(
+  cors({
+    origin: ENV.CLIENT_URL,
+    credentials: true,
+  }),
+);
 // auth router
 app.use("/api/auth", authRouter);
 const __dirname = path.resolve();
 // messages router
 app.use("/api/messages", messagesRouter);
-app.get("/protected", arcjetProtection, (req, res) => {
-  res.send({ message: "welcome home" });
-});
+// app.get("/protected", arcjetProtection, (req, res) => {
+// res.send({ message: "welcome home" });
+// });
 // if (process.env.NODE_ENV === "production") {
 app.use("/", (req, res) => {
   res.send("hello welcome");

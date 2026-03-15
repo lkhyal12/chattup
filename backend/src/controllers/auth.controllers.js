@@ -50,6 +50,9 @@ export const signUp = async (req, res) => {
         );
       } catch (error) {
         console.log(error);
+        return res
+          .status(404)
+          .json({ message: "email not found to send a welcome email" });
       }
     } else {
       res.status(400).json({ message: "Invalid user data" });
