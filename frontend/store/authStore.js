@@ -7,6 +7,7 @@ export const useAuth = create((set) => ({
   userEmail: null,
   isCheckingAuth: true,
   isSigningUp: false,
+  isLoggingIn: false,
   checkAuth: async () => {
     console.log("check auth running");
     try {
@@ -31,6 +32,34 @@ export const useAuth = create((set) => ({
       toast.error(error.response.data.message);
     } finally {
       set({ isSigningUp: false });
+    }
+  },
+
+  login: async (data) => {
+    set({ isLoggingIn: true });
+
+    try {
+      const res = await axiosInstance.post("/auth/login", data);
+      console.log(res);
+      set({ authUser: res.data, userEmail: res.data.email });
+
+      toast.success("logged in successfully");
+      return true;
+    } catch (err) {
+      toast.error(err.response.data.message);
+    } finally {
+      set({ isLoggingIn: false });
+      return false;
+    }
+  },
+
+  logout: async () => {
+    try {
+      await axiosInstance.post("/auth/logout");
+      set({ authUser: null, userEmail: null });
+    } catch (error) {
+      console.log("error in log out function ", error);
+      toast.error(error.response.data.message);
     }
   },
 }));

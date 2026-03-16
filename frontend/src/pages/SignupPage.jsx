@@ -99,7 +99,9 @@ const SignupPage = () => {
                     disabled={isSigningUp}
                   >
                     {isSigningUp ? (
-                      <LoaderIcon className="w-full h-5 animate-spin text-center" />
+                      <div className="w-full  flex items-center justify-center">
+                        <LoaderIcon className=" size-10 text-3xl animate-spin text-center block" />
+                      </div>
                     ) : (
                       "Create Account"
                     )}
