@@ -49,7 +49,7 @@ export const sendMessage = async (req, res) => {
         .json({ message: "You Cant Sen messages To yourself" });
     }
 
-    const receiverExists = await User.exists({ _id: receiverId });
+    const receiverExists = await User.exists({ _id: receiverId.toString() });
     if (!receiverExists)
       return res.status(404).json({ message: "Receiver  not found" });
 

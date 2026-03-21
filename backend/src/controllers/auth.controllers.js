@@ -42,18 +42,11 @@ export const signUp = async (req, res) => {
         profilePic: newUser.profilePic,
       });
 
-      try {
-        await sendWelcomeEmail(
-          savedUser.email,
-          savedUser.fullName,
-          process.env.CLIENT_URL,
-        );
-      } catch (error) {
-        console.log(error);
-        return res
-          .status(404)
-          .json({ message: "email not found to send a welcome email" });
-      }
+      sendWelcomeEmail(
+        savedUser.email,
+        savedUser.fullName,
+        process.env.CLIENT_URL,
+      ).catch((err) => console.log("error sending a welcome email ", err));
     } else {
       res.status(400).json({ message: "Invalid user data" });
     }
@@ -74,7 +67,7 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid Credentials" });
 
     generateToken(user._id, res);
-    res.status(200).json({
+    return res.status(200).json({
       email,
       fullName: user.fullName,
       profilePic: user.profilePic,
@@ -98,5 +91,16 @@ export const updateProfile = async (req, res) => {
       return res.status(400).json({ message: "Profile picture is required" });
     const userId = req.user._id;
     const uploadResponse = await cloudinary.uploader.upload(profilePic);
-  } catch (error) {}
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: uploadResponse.secure_url },
+      { new: true },
+    );
+
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    console.log("error in updating profile", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
 };
