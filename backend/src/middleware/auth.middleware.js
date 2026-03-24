@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { ENV } from "../lib/env.js";
 export async function protectRoute(req, res, next) {
-  console.log(req);
   try {
     const authorization = req.headers.authorization;
     // if (!authorization) return res.status(401).json({ message: "not allowed" });

@@ -10,7 +10,7 @@ export const useAuth = create((set) => ({
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check");
-
+      console.log(res);
       set({
         authUser: res.data?.user || res.data,
         userEmail: res.data.user.email,
@@ -46,7 +46,7 @@ export const useAuth = create((set) => ({
       toast.success("logged in successfully");
       return true;
     } catch (err) {
-      toast.error(err.response.data.message);
+      toast.error(err?.response?.data?.message);
     } finally {
       set({ isLoggingIn: false });
       return false;
@@ -59,7 +59,7 @@ export const useAuth = create((set) => ({
       set({ authUser: null, userEmail: null });
     } catch (error) {
       console.log("error in log out function ", error);
-      toast.error(error.response.data.message);
+      toast.error(error?.response?.data?.message);
     }
   },
   updateProfile: async (data) => {
@@ -68,8 +68,8 @@ export const useAuth = create((set) => ({
       set({ authUser: res.data?.user || res.data });
       toast.success("profile update successfully");
     } catch (err) {
-      console.log(err.response.data.message);
-      toast.error(err.response.data.message);
+      console.log(err?.response?.data?.message);
+      toast.error(err?.response?.data?.message);
     }
   },
 }));

@@ -10,7 +10,9 @@ import NoConvirsationPlaceholder from "../components/NoConvirsationPlaceholder";
 import { useChatStore } from "../../store/chatStore";
 
 const ChatPage = () => {
-  const { logout, slectedUser } = useAuth();
+  const { logout } = useAuth();
+  const { selectedUser } = useChatStore();
+
   const { activeTab } = useChatStore();
   return (
     <div className="relative w-full max-w-6xl h-[800px] text-gray-300">
@@ -26,7 +28,7 @@ const ChatPage = () => {
         </div>
         {/* right side */}
         <div className="flex-1 flex flex-col bg-slate-900/50 backdrop-blur-sm">
-          {slectedUser ? <ChatConatiner /> : <NoConvirsationPlaceholder />}
+          {selectedUser ? <ChatConatiner /> : <NoConvirsationPlaceholder />}
         </div>
       </BorderAnimatedContainer>
     </div>
