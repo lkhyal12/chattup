@@ -8,7 +8,8 @@ import cookieParser from "cookie-parser";
 import { arcjetProtection } from "./middleware/arcjet.middleware.js";
 import cors from "cors";
 import { ENV } from "./lib/env.js";
-const app = express();
+import { app, server } from "./lib/socket.io.js";
+
 dotenv.config();
 
 app.use(cookieParser());
@@ -36,7 +37,8 @@ app.use("/", (req, res) => {
 //     res.sendFile(path.join(__dirname, "..", "frontend", "dist", "index.html"));
 //   });
 // }
-app.listen(process.env.PORT || 3000, () => {
+
+server.listen(process.env.PORT || 3000, () => {
   console.log("server is running now on port", process.env.PORT || 3000);
   connectToMongo();
 });

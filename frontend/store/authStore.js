@@ -1,12 +1,17 @@
 import { create } from "zustand";
 import { axiosInstance } from "../src/lib/axios";
 import toast from "react-hot-toast";
-export const useAuth = create((set) => ({
+import { io } from "socket.io-client";
+const BASE_URL =
+  import.meta.env.MODE === "development" ? "http://localhost:3000/" : "/";
+export const useAuth = create((set, get) => ({
   authUser: null,
   userEmail: null,
   isCheckingAuth: true,
   isSigningUp: false,
   isLoggingIn: false,
+  socket: null,
+  onlineUsers: [],
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check");
@@ -15,6 +20,7 @@ export const useAuth = create((set) => ({
         authUser: res.data?.user || res.data,
         userEmail: res.data.user.email,
       });
+      get().connectToSocket();
     } catch (e) {
       console.log("error in the check auth function in zustand ", e);
       set({ authUser: null, userEmail: null });
@@ -29,6 +35,7 @@ export const useAuth = create((set) => ({
     try {
       const res = await axiosInstance.post("/auth/signup", data);
       set({ authUser: res.data, userEmail: res.data.email });
+      get().connectToSocket();
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -44,6 +51,7 @@ export const useAuth = create((set) => ({
 
       set({ authUser: res.data, userEmail: res.data.email });
       toast.success("logged in successfully");
+      get().connectToSocket();
       return true;
     } catch (err) {
       toast.error(err?.response?.data?.message);
@@ -57,6 +65,7 @@ export const useAuth = create((set) => ({
     try {
       await axiosInstance.post("/auth/logout");
       set({ authUser: null, userEmail: null });
+      get().disconnectSocket();
     } catch (error) {
       console.log("error in log out function ", error);
       toast.error(error?.response?.data?.message);
@@ -71,5 +80,20 @@ export const useAuth = create((set) => ({
       console.log(err?.response?.data?.message);
       toast.error(err?.response?.data?.message);
     }
+  },
+  connectToSocket: () => {
+    const { authUser } = get();
+    if (!authUser || get().socket?.connected) return;
+    console.log(get().socket);
+    const socket = io(BASE_URL, { withCredentials: true });
+    socket.connect();
+    set({ socket });
+
+    socket.on("getOnlineUsers", (userIds) => {
+      set({ onlineUsers: userIds });
+    });
+  },
+  disconnectSocket: () => {
+    if (get().socket?.connected) get().socket?.disconnect;
   },
 }));
